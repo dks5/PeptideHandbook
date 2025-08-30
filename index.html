@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Адаптивный справочник по пептидам</title>
+    <!-- Подключение Tailwind CSS для современного и адаптивного дизайна -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Дополнительные стили для более плавной анимации и кастомизации */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .view-toggle button.active {
+            background-color: #16a34a; /* Ярко-зеленый */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .view-toggle button:not(.active) {
+            background-color: #f3f4f6; /* Светло-серый */
+            color: #374151; /* Темно-серый текст */
+        }
+        .peptide-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .peptide-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        /* Стили для границ таблицы */
+        .custom-table th, .custom-table td {
+            border: 1px solid #e5e7eb; /* Светло-серые границы */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<div class="container mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+        <!-- Заголовок и переключатель вида -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <h1 class="text-3xl font-bold text-gray-800">Справочник по пептидам</h1>
+            <div class="view-toggle flex space-x-2 p-1 bg-gray-200 rounded-lg w-full sm:w-auto">
+                <button id="tableViewBtn" class="w-1/2 sm:w-auto px-4 sm:px-6 py-3 text-sm sm:text-base font-semibold rounded-md transition-all duration-200 active">Таблица</button>
+                <button id="cardViewBtn" class="w-1/2 sm:w-auto px-4 sm:px-6 py-3 text-sm sm:text-base font-semibold rounded-md transition-all duration-200">Карточки</button>
+            </div>
+        </div>
+
+        <!-- Предупреждения -->
+        <div class="flex flex-col gap-4 mb-6">
+            <div class="bg-blue-50 border-l-4 border-blue-400 text-blue-800 p-4 rounded-r-lg" role="alert">
+                <p class="font-bold">Ознакомительная информация</p>
+                <p class="text-sm">Вся информация представлена исключительно в ознакомительных целях, получена из открытых источников и не является медицинской рекомендацией.</p>
+            </div>
+            <div class="bg-red-50 border-l-4 border-red-400 text-red-800 p-4 rounded-r-lg" role="alert">
+                <p class="font-bold">Важное предупреждение</p>
+                <p class="text-sm">Перед применением обязательна консультация с врачом. Вы принимаете на себя все риски.</p>
+            </div>
+        </div>
+
+        <!-- Контейнер для таблицы (с горизонтальной прокруткой на мобильных) -->
+        <div id="tableView" class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-600 border-collapse custom-table">
+                <thead class="text-xs text-white uppercase bg-green-600">
+                    <tr>
+                        <th scope="col" class="py-3 px-6">Пептид</th>
+                        <th scope="col" class="py-3 px-6">Дозировки</th>
+                        <th scope="col" class="py-3 px-6">Длительность курса</th>
+                        <th scope="col" class="py-3 px-6">Комментарий</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Данные полностью соответствуют исходному файлу -->
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/5-amino-1mq/" class="text-blue-600 hover:underline">5-Amino-1MQ</a></td>
+                        <td class="py-4 px-6">50-150 мг в сутки</td>
+                        <td class="py-4 px-6">Курс 4 недели, дольше неэффективно<br/> 4 недели перерыв</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">ACE-031</td>
+                        <td class="py-4 px-6">0.1-1 мг 1 раз в неделю</td>
+                        <td class="py-4 px-6">4 недели</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/adipotide/" class="text-blue-600 hover:underline">Adipotide</a></td>
+                        <td class="py-4 px-6">1 мг в день</td>
+                        <td class="py-4 px-6">4 недели</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/aod-9604/" class="text-blue-600 hover:underline">AOD9604</a></td>
+                        <td class="py-4 px-6">250 мкг 1 раз в день</td>
+                        <td class="py-4 px-6">4-8 недель курс<br/> 4-8 недель перерыв</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/ara-290-16mg/" class="text-blue-600 hover:underline">ARA-290</a></td>
+                        <td class="py-4 px-6">4 мг в сутки</td>
+                        <td class="py-4 px-6">4 недели</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/bpc-157/" class="text-blue-600 hover:underline">BPC-157</a></td>
+                        <td class="py-4 px-6">250-1000 мкг</td>
+                        <td class="py-4 px-6">4-8 недель курс<br/> 4-8 недель перерыв</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                     <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/cagrilintide-kagrilintid/" class="text-blue-600 hover:underline">Cagrilintide</a></td>
+                        <td class="py-4 px-6">0.3 → 0.6 → 1.2 → 2.4 → 4.5 мг в неделю</td>
+                        <td class="py-4 px-6">длительно, 1 раз в 4 месяца перерыв на месяц</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">Cerebrolysin (Церебролизин)</td>
+                        <td class="py-4 px-6">5-10 мг в сутки</td>
+                        <td class="py-4 px-6">10-30 дней<br/> 2-4 курса в год</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/cjc-1295/" class="text-blue-600 hover:underline">CJC-1295</a></td>
+                        <td class="py-4 px-6">100-150 мкг 2-3 раза в день</td>
+                        <td class="py-4 px-6">курс 4 недели<br/> перерыв 4 недели</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/cjc-1295-with-dac/" class="text-blue-600 hover:underline">CJC-1295 DAC</a></td>
+                        <td class="py-4 px-6">1-2 мг в неделю</td>
+                        <td class="py-4 px-6">4 недели</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">Cortexin</td>
+                        <td class="py-4 px-6">10-20 мг в сутки</td>
+                        <td class="py-4 px-6">Курс 10 дней<br/> 1-4 курса в год</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/dihexa/" class="text-blue-600 hover:underline">Dihexa</a></td>
+                        <td class="py-4 px-6">2-10 мг в день</td>
+                        <td class="py-4 px-6">4-8 недель<br/> 1-4 курса в год</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/dsip/" class="text-blue-600 hover:underline">DSIP</a></td>
+                        <td class="py-4 px-6">50-250 мкг за час до сна</td>
+                        <td class="py-4 px-6">8 недель курс<br/> 8 недель перерыв</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/epithalon-epitalon-10mg/" class="text-blue-600 hover:underline">Epithalon</a></td>
+                        <td class="py-4 px-6">5-10 мг в сутки</td>
+                        <td class="py-4 px-6">10 дней при дозировке 10 мг<br/> 20 дней при дозировке 5 мг</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">Foxo4-DRI</td>
+                        <td class="py-4 px-6">2.5 мг 1 раз в неделю</td>
+                        <td class="py-4 px-6">8 недель</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/ghk-cu/" class="text-blue-600 hover:underline">GHK-Cu</a></td>
+                        <td class="py-4 px-6">1-10 мг в сутки</td>
+                        <td class="py-4 px-6">курс 4-8 недель<br/> 4-8 недель перерыв</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/ghrp-6/" class="text-blue-600 hover:underline">GHRP-6</a></td>
+                        <td class="py-4 px-6">100-200мкг три раза в день в область живота или бедра за 30-60 минут до еды.</td>
+                        <td class="py-4 px-6">Курс 4-12 недель</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/gip-glp-1/" class="text-blue-600 hover:underline">GLP+GIP</a></td>
+                        <td class="py-4 px-6">2.5 → 5 → 10 → 15 мг в неделю</td>
+                        <td class="py-4 px-6">можно длительно<br/> 1 раз в 4 месяца делать перерыв на месяц</td>
+                        <td class="py-4 px-6">На практике 5 мг в неделю обычно достаточно</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/glow/" class="text-blue-600 hover:underline">Glow</a></td>
+                        <td class="py-4 px-6">2-3мг в сутки</td>
+                        <td class="py-4 px-6">Минимальный курс 10 дней. Максимальный курс до 3-х месяцев.</td>
+                        <td class="py-4 px-6">Обязательно контроль уровня Меди (церулоплазмин) в крови.</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/gonadorelin/" class="text-blue-600 hover:underline">Gonadorelin</a></td>
+                        <td class="py-4 px-6">1-2 мкг на 1кг веса. 4 раза в сутки с интервалом 1,5-3 часа.</td>
+                        <td class="py-4 px-6">Курс 2-4 недели</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/hep-1-gepon/" class="text-blue-600 hover:underline">HEP-1</a></td>
+                        <td class="py-4 px-6">1-2 мг 1-2 раза в день</td>
+                        <td class="py-4 px-6">3 приема с интервалом 1-3 дня</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/humanin-5mg/" class="text-blue-600 hover:underline">Humanin</a></td>
+                        <td class="py-4 px-6">1-5 мг 3 раза в неделю</td>
+                        <td class="py-4 px-6">курс 4 недели<br/> 1-4 курса в год</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/igf-1-lr3/" class="text-blue-600 hover:underline">IGF-1LR3</a></td>
+                        <td class="py-4 px-6">20-100 мкг 3 раза в неделю</td>
+                        <td class="py-4 px-6">2-3 недели</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/ipamorelin-ipamorelin/" class="text-blue-600 hover:underline">Ipamorelin</a></td>
+                        <td class="py-4 px-6">100 мкг 1-3 раза в сутки</td>
+                        <td class="py-4 px-6">4-8 недель курс<br/> 4-8 недель перерыв</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/kisspeptin/" class="text-blue-600 hover:underline">Kisspeptin-10</a></td>
+                        <td class="py-4 px-6">50-250 мкг 1 раз в день</td>
+                        <td class="py-4 px-6">4-8 недель</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/kpv-10mg/" class="text-blue-600 hover:underline">KPV</a></td>
+                        <td class="py-4 px-6">250-500 мкг в сутки</td>
+                        <td class="py-4 px-6">4-8 недель курс<br/> 4-8 недель перерыв</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/ll-37-5mg/" class="text-blue-600 hover:underline">LL-37</a></td>
+                        <td class="py-4 px-6">100-200 мкг в сутки</td>
+                        <td class="py-4 px-6">50 дней<br/> 1-2 курса в год</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/mazdutide/" class="text-blue-600 hover:underline">Mazdutide</a></td>
+                        <td class="py-4 px-6">3-9 мг в неделю</td>
+                        <td class="py-4 px-6">Длительно, каждые 4 месяца делать перерыв на месяц</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/mt2-melanotan-ii-melanotan-2/" class="text-blue-600 hover:underline">Melanotan II (MT2)</a></td>
+                        <td class="py-4 px-6">100-250 мкг в день для загара<br/> затем 100 мкг 2 раза в неделю для поддержания</td>
+                        <td class="py-4 px-6">Курс 1-2 месяца<br/> Можно длительно, 8 месяцев в году</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/mots-c/" class="text-blue-600 hover:underline">MOTS-c</a></td>
+                        <td class="py-4 px-6">2-5 мг в сутки<br/> 5 дней в неделю</td>
+                        <td class="py-4 px-6">4 недели<br/> 1-2 курса в год</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/nad-plus/" class="text-blue-600 hover:underline">NAD+</a></td>
+                        <td class="py-4 px-6">100-500 мг в день<br/> 2-3 раза в неделю</td>
+                        <td class="py-4 px-6"></td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/nanjo/" class="text-blue-600 hover:underline">Nanjo</a></td>
+                        <td class="py-4 px-6">2.5 → 5 → 10 → 15 мг в неделю</td>
+                        <td class="py-4 px-6">можно длительно<br/> 1 раз в 4 месяца делать перерыв на месяц</td>
+                        <td class="py-4 px-6">На практике 5 мг в неделю обычно достаточно</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">Oligopeptide-1</td>
+                        <td class="py-4 px-6">5-10 мг 1-3 раза в сутки</td>
+                        <td class="py-4 px-6">4-8 недель</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">Orexin A</td>
+                        <td class="py-4 px-6">100-150 мкг 1 раз в сутки утром<br/> Минимум 50, максимум 250</td>
+                        <td class="py-4 px-6"></td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/oxytocin-acetate-oksitoczin/" class="text-blue-600 hover:underline">Oxytocin</a></td>
+                        <td class="py-4 px-6">50-100 мкг за 30-60 минут до социальной активности</td>
+                        <td class="py-4 px-6"></td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/p21/" class="text-blue-600 hover:underline">P21</a></td>
+                        <td class="py-4 px-6">Начать с 1 мг в сутки<br/> Можно повысить до 4 мг в сутки</td>
+                        <td class="py-4 px-6">Курс 4-8 недель</td>
+                        <td class="py-4 px-6">Эффективен в виде назального спрея</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/pe-22-28/" class="text-blue-600 hover:underline">Pe 22-28</a></td>
+                        <td class="py-4 px-6">100-400 мкг 1 раз в сутки.<br/>При депрессии 400мкг 1 раз утром.</td>
+                        <td class="py-4 px-6">Курс 8 недель<br/> Перерыв 8 недель</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/peg-mgf/" class="text-blue-600 hover:underline">PEG MGF</a></td>
+                        <td class="py-4 px-6">100 мкг каждые 2-3 дня<br/> При травме 200-400 мкг в день</td>
+                        <td class="py-4 px-6">Курс 4-8 недель<br/> Перерыв 4-8 недель</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/pt-141/" class="text-blue-600 hover:underline">PT-141</a></td>
+                        <td class="py-4 px-6">0.5-2 мг за 45 минут до сексуальной активности</td>
+                        <td class="py-4 px-6"></td>
+                        <td class="py-4 px-6">Не более 1 дозы в сутки и не более 8 доз в месяц</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">PTP-20</td>
+                        <td class="py-4 px-6">Использовать в виде спрея, китайцы продают флаконы по 50 мл</td>
+                        <td class="py-4 px-6"></td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/retatrutide/" class="text-blue-600 hover:underline">Retatrutide</a></td>
+                        <td class="py-4 px-6">2 → 4 → 8 → 12 мг в неделю</td>
+                        <td class="py-4 px-6">Длительно, проводились исследования длиной в год. <br/>Делать каждые 4 месяца перерыв на месяц.</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/selank-selank/" class="text-blue-600 hover:underline">Selank</a></td>
+                        <td class="py-4 px-6">Спрей: 750-1000 мкг в день<br/> Инъекция: 100-300 мкг в день</td>
+                        <td class="py-4 px-6">Курс 2 недели<br/> Перерыв 2 недели</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">Semaglutide</td>
+                        <td class="py-4 px-6">Поднятие дозировки 1 раз в месяц при необходимости:<br/> 0.25 - 0.5 - 1 - 1.7 - 2.4</td>
+                        <td class="py-4 px-6">После достижения дозировки в 2,4 мг в неделю <br/>использовать до достижения нужного веса. Можно <br/>несколько лет. Раз в 4 месяца делать перерыв на <br/>месяц.</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/semax-semaks/" class="text-blue-600 hover:underline">Semax</a></td>
+                        <td class="py-4 px-6">Спрей: 300-1000 мкг<br/> Инъекция: 100-300 мкг</td>
+                        <td class="py-4 px-6">Курс 2 недели<br/> Перерыв 2 недели</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">SLU-PP-332</td>
+                        <td class="py-4 px-6">1-2 мг в сутки</td>
+                        <td class="py-4 px-6">8-12 недель</td>
+                        <td class="py-4 px-6">эффективнее разделить на 3-4 приема в день</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">SS-31</td>
+                        <td class="py-4 px-6">2-4 мг в день</td>
+                        <td class="py-4 px-6">4 недели<br/> курс 1-2 раза в год</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/tb500/" class="text-blue-600 hover:underline">TB-500</a></td>
+                        <td class="py-4 px-6">250-1000 мкг<br/> до 2 мг при травме</td>
+                        <td class="py-4 px-6">4-8 недель курс<br/> 4-8 недель перерыв</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/tesamorelin/" class="text-blue-600 hover:underline">Tesamorelin</a></td>
+                        <td class="py-4 px-6">1-2 мг в день</td>
+                        <td class="py-4 px-6">4-8 недель<br/> есть данные про 20-26 недель</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">Tesofensine</td>
+                        <td class="py-4 px-6">250-500 мкг</td>
+                        <td class="py-4 px-6">1-6 месяцев</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/thymalin-timalin/" class="text-blue-600 hover:underline">Thymalin</a></td>
+                        <td class="py-4 px-6">10 мг</td>
+                        <td class="py-4 px-6">10 дней курс<br/> 1-2 курса в год</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/thymosin-alfa/" class="text-blue-600 hover:underline">Thymosin Alpha 1</a></td>
+                        <td class="py-4 px-6">0.5-2 мг 2 раза в неделю<br/> 1.5 мг 2-3 раза в день во время болезни</td>
+                        <td class="py-4 px-6">Курс: 8 недель<br/> Интенсивная терапия во время болезни: 5 дней</td>
+                        <td class="py-4 px-6"></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/tirzepatide-tirzepatid/" class="text-blue-600 hover:underline">Tirzepatide</a></td>
+                        <td class="py-4 px-6">2.5 → 5 → 10 → 15 мг в неделю</td>
+                        <td class="py-4 px-6">можно длительно<br/> 1 раз в 4 месяца делать перерыв на месяц</td>
+                        <td class="py-4 px-6">На практике 5 мг в неделю обычно достаточно</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-white">
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"><a href="https://nanogens.ru/product/vip/" class="text-blue-600 hover:underline">VIP</a></td>
+                        <td class="py-4 px-6">300-500 мкг в день</td>
+                        <td class="py-4 px-6">можно длительно, до 8 месяцев</td>
+                        <td class="py-4 px-6">Лучше в виде назального спрея</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Контейнер для карточек -->
+        <div id="cardView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            <!-- Карточки будут сгенерированы JavaScript -->
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tableViewBtn = document.getElementById('tableViewBtn');
+    const cardViewBtn = document.getElementById('cardViewBtn');
+    const tableView = document.getElementById('tableView');
+    const cardView = document.getElementById('cardView');
+    let cardsGenerated = false;
+
+    // Функция для генерации карточек из данных таблицы
+    function createCards() {
+        const tableBody = document.querySelector('#tableView tbody');
+        if (!tableBody) return;
+
+        const tableRows = tableBody.querySelectorAll('tr');
+        let cardsHtml = '';
+        
+        tableRows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 4) return;
+            
+            const peptide = cells[0].innerHTML;
+            const dosage = cells[1].innerHTML;
+            const duration = cells[2].innerHTML;
+            const comment = cells[3].innerHTML;
+
+            // HTML-структура для карточки с использованием классов Tailwind CSS
+            cardsHtml += `
+                <div class="peptide-card bg-white border border-gray-200 rounded-xl p-6 flex flex-col gap-4">
+                    <h3 class="text-lg font-bold text-green-700">${peptide}</h3>
+                    <div class="text-sm">
+                        <strong class="block text-gray-700 font-semibold">Дозировки:</strong>
+                        <div class="text-gray-600 mt-1">${dosage}</div>
+                    </div>
+                    <div class="text-sm">
+                        <strong class="block text-gray-700 font-semibold">Длительность курса:</strong>
+                        <div class="text-gray-600 mt-1">${duration}</div>
+                    </div>
+                    ${comment.trim() ? `
+                    <div class="text-sm">
+                        <strong class="block text-gray-700 font-semibold">Комментарий:</strong>
+                        <div class="text-gray-600 mt-1">${comment}</div>
+                    </div>` : ''}
+                </div>
+            `;
+        });
+        
+        cardView.innerHTML = cardsHtml;
+        cardsGenerated = true;
+    }
+
+    // Обработчик для кнопки "Таблица"
+    tableViewBtn.addEventListener('click', () => {
+        tableView.classList.remove('hidden');
+        cardView.classList.add('hidden');
+        tableViewBtn.classList.add('active');
+        cardViewBtn.classList.remove('active');
+    });
+
+    // Обработчик для кнопки "Карточки"
+    cardViewBtn.addEventListener('click', () => {
+        if (!cardsGenerated) {
+            createCards();
+        }
+        tableView.classList.add('hidden');
+        cardView.classList.remove('hidden');
+        cardViewBtn.classList.add('active');
+        tableViewBtn.classList.remove('active');
+    });
+});
+</script>
+
+</body>
+</html>
+
